@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>หน้าแลนดิ้ง</title>
+    <style>
+        body {
+            background-color: #f5f1e7; /* Cream */
+            font-family: Arial, sans-serif;
+            text-align: center;
+            color: #6d4d4b; /* Dusty Rose */
+        }
+        h1 {
+            color: #c79a4d; /* Amber */
+            margin-top: 50px;
+        }
+        button {
+            background-color: #c79a4d; /* Amber */
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        button:hover {
+            background-color: #b68a3d; /* Darker Amber */
+        }
+        .qr-code {
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🌸 เปิดข้อความพิเศษสำหรับคุณ!</h1>
+    <p>เราขอเชิญคุณสัมผัสกับข้อความหวาน ๆ ที่เราจัดเตรียมไว้เพื่อคุณ。</p>
+    <button onclick="window.location.href='index.html';">ไปที่หน้า Index</button>
+    <div class="qr-code">
+        <img src="https://api.qrserver.com/v1/create-qr-code/?data=https://example.com/form&size=150x150" alt="QR Code">
+    </div>
+</body>
+</html>
