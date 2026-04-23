@@ -1,560 +1,67 @@
 <!DOCTYPE html>
-<html lang="th">
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>มีอะไรอยากบอก...</title>
-<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Noto+Serif+Thai:wght@300;400;500&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-<style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-:root {
-  --cream: #fdf6ee;
-  --warm-white: #fffaf4;
-  --paper: #f5e6d0;
-  --dusty-rose: #e8c4b8;
-  --muted-rose: #d4a090;
-  --deep-rose: #b07060;
-  --amber: #c9956a;
-  --ink: #3d2b1f;
-  --ink-light: #7a5c4e;
-  --shadow: rgba(61,43,31,0.15);
-}
-
-html, body {
-  width: 100%; height: 100%;
-  background: var(--cream);
-  overflow: hidden;
-  font-family: 'Noto Serif Thai', serif;
-  color: var(--ink);
-}
-
-body::after {
-  content: '';
-  position: fixed; inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
-  pointer-events: none; z-index: 9999;
-}
-
-#stage {
-  position: fixed; inset: 0;
-  display: flex; align-items: center; justify-content: center;
-  perspective: 1400px;
-}
-
-/* ── PAGE CARD ── */
-.page {
-  position: absolute;
-  width: min(420px, 90vw);
-  background: var(--warm-white);
-  border-radius: 4px 18px 18px 4px;
-  padding: 44px 40px 40px;
-  box-shadow:
-    0 2px 0 var(--dusty-rose),
-    0 12px 48px var(--shadow),
-    0 2px 8px rgba(61,43,31,0.06);
-  min-height: 480px;
-}
-.page::before {
-  content: '';
-  position: absolute; top:0; left:0; right:0; height:4px;
-  background: linear-gradient(90deg, var(--dusty-rose), var(--muted-rose), var(--amber));
-  border-radius: 4px 18px 0 0;
-}
-.page::after {
-  content: '';
-  position: absolute; top:0; left:0; bottom:0; width:18px;
-  background: linear-gradient(90deg, rgba(61,43,31,0.06), transparent);
-  pointer-events: none;
-}
-
-/* ── INK REVEAL ── */
-.ink-line { overflow: hidden; display: block; }
-.ink-inner { display: block; transform: translateY(110%); }
-
-/* ── TYPE ── */
-.page-title {
-  font-family: 'Caveat', cursive;
-  font-size: 2rem; font-weight: 700;
-  color: var(--deep-rose); line-height: 1.2; margin-bottom: 6px;
-}
-.page-sub {
-  font-size: 0.82rem; font-weight: 300;
-  color: var(--ink-light); line-height: 1.8; margin-bottom: 24px;
-}
-.divider {
-  width: 48px; height: 2px;
-  background: linear-gradient(90deg, var(--dusty-rose), transparent);
-  border-radius: 2px; margin: 20px 0;
-}
-.opening {
-  font-family: 'Caveat', cursive;
-  font-size: 1.4rem; font-weight: 500;
-  color: var(--ink); line-height: 1.8; margin-bottom: 8px;
-}
-
-/* ── NEXT ── */
-.next-btn {
-  display: inline-flex; align-items: center; gap: 8px;
-  margin-top: 28px;
-  font-family: 'Caveat', cursive; font-size: 1.1rem;
-  color: var(--deep-rose);
-  background: none; border: none; cursor: pointer; padding: 0;
-  transition: gap 0.2s;
-}
-.next-btn:hover { gap: 14px; }
-.next-btn .arr { font-size: 1.3rem; transition: transform 0.2s; }
-.next-btn:hover .arr { transform: translateX(4px); }
-
-/* ── INPUTS ── */
-.q-block { margin-bottom: 20px; }
-.q-label {
-  font-family: 'Caveat', cursive;
-  font-size: 1.05rem; color: var(--ink-light);
-  display: block; margin-bottom: 8px;
-}
-.q-input {
-  width: 100%;
-  background: #fdf0e4;
-  border: 1.5px solid var(--dusty-rose); border-radius: 10px;
-  padding: 10px 14px;
-  font-family: 'Caveat', cursive; font-size: 1.05rem;
-  color: var(--ink); resize: none; outline: none;
-  transition: border-color 0.2s, background 0.2s; line-height: 1.6;
-}
-.q-input:focus { border-color: var(--muted-rose); background: var(--warm-white); }
-.q-input::placeholder { color: #c4a898; font-style: italic; }
-
-/* ── CHOICES ── */
-.choice-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
-.c-btn {
-  flex: 1; min-width: 90px; padding: 12px 10px;
-  border-radius: 50px; border: 2px solid var(--dusty-rose);
-  background: transparent;
-  font-family: 'Caveat', cursive; font-size: 1.1rem;
-  color: var(--ink); cursor: pointer; transition: all 0.2s;
-}
-.c-btn:hover { background: #fdf0e4; transform: translateY(-2px); box-shadow: 0 4px 12px var(--shadow); }
-.c-btn.sel-yes   { background: var(--deep-rose); border-color: var(--deep-rose); color:#fff; transform:translateY(-2px); }
-.c-btn.sel-maybe { background: var(--amber);     border-color: var(--amber);     color:#fff; transform:translateY(-2px); }
-.c-btn.sel-no    { background: #888880;           border-color: #888880;           color:#fff; transform:translateY(-2px); }
-
-/* ── SUBMIT ── */
-.submit-btn {
-  width: 100%; margin-top: 20px; padding: 14px;
-  background: linear-gradient(135deg, var(--muted-rose), var(--deep-rose));
-  border: none; border-radius: 50px;
-  font-family: 'Caveat', cursive; font-size: 1.2rem;
-  color: #fff; cursor: pointer;
-  box-shadow: 0 4px 16px rgba(176,112,96,0.3); transition: all 0.25s;
-}
-.submit-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(176,112,96,0.4); }
-.err {
-  font-family: 'Caveat', cursive; font-size: 0.95rem;
-  color: var(--deep-rose); min-height: 1.4em; margin-top: 10px;
-}
-
-/* ── COPY BOX ── */
-.copy-box {
-  background: #fdf0e4; border: 1.5px dashed var(--dusty-rose);
-  border-radius: 12px; padding: 14px 16px; margin: 16px 0 0;
-  font-family: 'Caveat', cursive; font-size: 0.85rem;
-  color: var(--ink-light); line-height: 1.6; word-break: break-all;
-}
-.copy-btn {
-  width: 100%; margin-top: 10px; padding: 12px;
-  background: transparent; border: 2px solid var(--dusty-rose); border-radius: 50px;
-  font-family: 'Caveat', cursive; font-size: 1.05rem;
-  color: var(--ink-light); cursor: pointer; transition: all 0.2s;
-}
-.copy-btn:hover { background: #fdf0e4; }
-.copy-btn.done { border-color: var(--deep-rose); color: var(--deep-rose); }
-
-/* ── RESULT ── */
-.result-choice {
-  font-family: 'Caveat', cursive; font-size: 2.6rem; font-weight: 700;
-  text-align: center; margin: 12px 0 20px;
-}
-.result-choice.yes   { color: var(--deep-rose); }
-.result-choice.maybe { color: var(--amber); }
-.result-choice.no    { color: #888880; }
-.result-item {
-  background: #fdf0e4; border-radius: 12px;
-  padding: 12px 16px; margin-bottom: 10px;
-}
-.result-q { font-family: 'Caveat', cursive; font-size: 0.88rem; color: var(--ink-light); margin-bottom: 4px; }
-.result-a { font-family: 'Caveat', cursive; font-size: 1.05rem; color: var(--ink); line-height: 1.5; }
-.result-empty { color: #c4a898; font-style: italic; }
-
-/* ── CANVAS ── */
-#ptc { position: fixed; inset: 0; pointer-events: none; z-index: 500; }
-
-@media (max-height: 680px) {
-  #stage { align-items: flex-start; overflow-y: auto; padding: 20px 0; }
-  html, body { overflow: auto; }
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+            background-color: #121212; /* dark mode */
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        .progress {
+            position: relative;
+            height: 30px;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        .progress-bar {
+            height: 100%;
+            background-color: #76c7c0;
+            width: 0;
+            transition: width 0.5s;
+        }
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #ff0;
+            animation: fall 2s infinite;
+        }
+        @keyframes fall {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(100vh); }
+        }
+    </style>
 </head>
 <body>
-
-<div id="stage"></div>
-<canvas id="ptc"></canvas>
-
-<script>
-// ── STATE ──
-let choice = null;
-let resultURL = '';
-let appMode = 'receive'; // 'receive' | 'result' | 'done'
-
-// ── BOOT ──
-window.addEventListener('load', () => {
-  const hash = location.hash;
-  if (hash.startsWith('#result=')) {
-    appMode = 'result';
-    buildResultPage(hash.slice(8));
-  } else if (hash === '#done') {
-    appMode = 'done';
-    buildExpiredPage();
-  } else {
-    buildPage1();
-  }
-});
-
-// ════════════════════════════
-//  PAGE 1 — OPENING
-// ════════════════════════════
-function buildPage1() {
-  const page = makePage(`
-    <div class="page-title">
-      <span class="ink-line"><span class="ink-inner">มีอะไรอยากบอกคุณ</span></span>
+    <h1>Welcome to Dark Mode!</h1>
+    <div class="progress">
+        <div class="progress-bar" style="width: 70%;"></div>
     </div>
-    <div class="page-sub">
-      <span class="ink-line"><span class="ink-inner">ขอบคุณที่เปิดอ่านนะ — ไม่ต้องรีบ</span></span>
-      <span class="ink-line"><span class="ink-inner">ตอบตามที่รู้สึกจริงๆ ก็พอ 🍃</span></span>
-    </div>
-    <div class="divider"></div>
-    <div class="opening">
-      <span class="ink-line"><span class="ink-inner">อยากรู้ว่าเราสองคน</span></span>
-      <span class="ink-line"><span class="ink-inner">มีโอกาสได้ใกล้กันมากกว่านี้ไหม</span></span>
-    </div>
-    <button class="next-btn" id="next1">ไปต่อ <span class="arr">→</span></button>
-  `);
-  mount(page, () => {
-    document.getElementById('next1').onclick = () =>
-      pageTurn(() => buildPage2());
-  });
-}
-
-// ════════════════════════════
-//  PAGE 2 — Q + ANSWER
-// ════════════════════════════
-function buildPage2() {
-  choice = null;
-  const page = makePage(`
-    <div class="page-title">
-      <span class="ink-line"><span class="ink-inner">บอกตรงๆ ได้เลยนะ</span></span>
-    </div>
-    <div class="page-sub">
-      <span class="ink-line"><span class="ink-inner">ไม่ว่าคำตอบจะเป็นอะไร ก็โอเคเสมอ 🌸</span></span>
-    </div>
-    <div class="divider"></div>
-
-    <div class="q-block">
-      <span class="ink-line"><span class="ink-inner">
-        <label class="q-label" for="q1">ตอนนี้รู้สึกยังไงบ้าง?</label>
-      </span></span>
-      <span class="ink-line" style="overflow:visible"><span class="ink-inner">
-        <textarea class="q-input" id="q1" rows="2" placeholder="เขียนอะไรก็ได้ที่อยู่ในใจ..."></textarea>
-      </span></span>
-    </div>
-
-    <div class="q-block">
-      <span class="ink-line"><span class="ink-inner">
-        <label class="q-label" for="q2">มีอะไรที่ทำให้ลังเลอยู่ไหม?</label>
-      </span></span>
-      <span class="ink-line" style="overflow:visible"><span class="ink-inner">
-        <textarea class="q-input" id="q2" rows="2" placeholder="ถ้ามีก็บอกได้เลย ไม่ตัดสิน..."></textarea>
-      </span></span>
-    </div>
-
-    <span class="ink-line"><span class="ink-inner">
-      <div class="q-label">คำตอบของคุณ</div>
-      <div class="choice-row">
-        <button class="c-btn" id="btn-yes"   onclick="pick('yes',this)">เป็น 🌸</button>
-        <button class="c-btn" id="btn-maybe" onclick="pick('maybe',this)">ขอเวลาคิด 🍂</button>
-        <button class="c-btn" id="btn-no"    onclick="pick('no',this)">ไม่ 🤍</button>
-      </div>
-    </span></span>
-
-    <span class="ink-line"><span class="ink-inner">
-      <div class="err" id="err"></div>
-      <button class="submit-btn" onclick="doSubmit()">ส่งคำตอบ ✉️</button>
-    </span></span>
-  `);
-  mount(page);
-}
-
-// ════════════════════════════
-//  PAGE 3 — THANK YOU
-// ════════════════════════════
-function buildPage3(url) {
-  resultURL = url;
-  const page = makePage(`
-    <div class="page-title" style="text-align:center">
-      <span class="ink-line"><span class="ink-inner">ขอบคุณนะ 🤍</span></span>
-    </div>
-    <div class="page-sub" style="text-align:center">
-      <span class="ink-line"><span class="ink-inner">ได้รับคำตอบของคุณแล้ว</span></span>
-      <span class="ink-line"><span class="ink-inner">ขอบคุณที่ตอบตามใจจริงๆ 🌸</span></span>
-    </div>
-    <div class="divider" style="margin:20px auto"></div>
-    <span class="ink-line"><span class="ink-inner">
-      <div class="q-label" style="text-align:center;margin-bottom:2px">
-        ช่วยส่งลิงก์นี้กลับไปให้เขาด้วยนะ
-      </div>
-      <div class="copy-box">${escHtml(url)}</div>
-      <button class="copy-btn" id="copy-btn" onclick="doCopy()">📋 คัดลอกลิงก์</button>
-    </span></span>
-    <span class="ink-line"><span class="ink-inner">
-      <div class="page-sub" style="text-align:center;margin-top:18px;font-size:0.76rem">
-        หลังส่งลิงก์ให้เขาแล้ว ปิดหน้านี้ได้เลย 🍃
-      </div>
-    </span></span>
-  `);
-  mount(page);
-}
-
-// ════════════════════════════
-//  RESULT PAGE
-// ════════════════════════════
-function buildResultPage(encoded) {
-  let ch, q1, q2;
-  try {
-    const dec = atob(encoded);
-    const parts = dec.split('|');
-    ch = parts[0];
-    q1 = decodeURIComponent(parts[1] || '');
-    q2 = decodeURIComponent(parts[2] || '');
-  } catch(e) { buildExpiredPage(); return; }
-
-  const labels = { yes:'เป็น 🌸', maybe:'ขอเวลาคิด 🍂', no:'ไม่ 🤍' };
-  const page = makePage(`
-    <div class="page-title">
-      <span class="ink-line"><span class="ink-inner">คำตอบที่ได้รับ</span></span>
-    </div>
-    <div class="page-sub">
-      <span class="ink-line"><span class="ink-inner">นี่คือสิ่งที่เขาตอบมา</span></span>
-    </div>
-    <div class="divider"></div>
-    <span class="ink-line"><span class="ink-inner">
-      <div class="result-choice ${ch}">${labels[ch] || ch}</div>
-    </span></span>
-    <span class="ink-line"><span class="ink-inner">
-      <div class="result-item">
-        <div class="result-q">ตอนนี้รู้สึกยังไงบ้าง?</div>
-        <div class="result-a">${q1 || '<span class="result-empty">ไม่ได้เขียนมา</span>'}</div>
-      </div>
-      <div class="result-item">
-        <div class="result-q">มีอะไรที่ทำให้ลังเลอยู่ไหม?</div>
-        <div class="result-a">${q2 || '<span class="result-empty">ไม่ได้เขียนมา</span>'}</div>
-      </div>
-    </span></span>
-  `);
-  mount(page);
-}
-
-// ════════════════════════════
-//  EXPIRED
-// ════════════════════════════
-function buildExpiredPage() {
-  const page = makePage(`
-    <div style="text-align:center;padding:20px 0">
-      <div style="font-size:2.5rem;margin-bottom:16px">🍂</div>
-      <div class="page-title" style="text-align:center">
-        <span class="ink-line"><span class="ink-inner">ลิงก์นี้ใช้ไปแล้ว</span></span>
-      </div>
-      <div class="page-sub" style="text-align:center;margin-top:12px">
-        <span class="ink-line"><span class="ink-inner">คำตอบถูกส่งเรียบร้อยแล้ว</span></span>
-        <span class="ink-line"><span class="ink-inner">ลิงก์นี้ใช้ได้ครั้งเดียวเท่านั้น</span></span>
-      </div>
-    </div>
-  `);
-  mount(page);
-}
-
-// ════════════════════════════
-//  PICK / SUBMIT / COPY
-// ════════════════════════════
-function pick(val, btn) {
-  choice = val;
-  ['yes','maybe','no'].forEach(v => {
-    const b = document.getElementById('btn-'+v);
-    if (b) b.className = 'c-btn';
-  });
-  btn.classList.add('sel-'+val);
-  const e = document.getElementById('err');
-  if (e) e.textContent = '';
-}
-
-function doSubmit() {
-  if (!choice) {
-    const err = document.getElementById('err');
-    err.textContent = 'เลือกคำตอบก่อนนะ 🌸';
-    gsap.fromTo(err, {x:-5}, {x:5, duration:0.07, repeat:5, yoyo:true, ease:'none'});
-    return;
-  }
-  const q1 = document.getElementById('q1').value.trim();
-  const q2 = document.getElementById('q2').value.trim();
-  const payload = btoa([choice, encodeURIComponent(q1), encodeURIComponent(q2)].join('|'));
-  const url = location.href.split('#')[0] + '#result=' + payload;
-  pageTurn(() => buildPage3(url));
-}
-
-function doCopy() {
-  navigator.clipboard.writeText(resultURL).then(() => {
-    const btn = document.getElementById('copy-btn');
-    btn.textContent = '✓ คัดลอกแล้ว!';
-    btn.classList.add('done');
-    setTimeout(() => {
-      btn.textContent = '📋 คัดลอกลิงก์';
-      btn.classList.remove('done');
-    }, 2500);
-  });
-}
-
-// ════════════════════════════
-//  HELPERS
-// ════════════════════════════
-function makePage(html) {
-  const d = document.createElement('div');
-  d.className = 'page';
-  d.style.opacity = '0';
-  d.innerHTML = html;
-  return d;
-}
-
-function mount(page, afterReveal) {
-  const stage = document.getElementById('stage');
-  stage.innerHTML = '';
-  stage.appendChild(page);
-  gsap.to(page, {
-    opacity: 1, duration: 0.3,
-    onComplete: () => {
-      inkReveal(page);
-      if (afterReveal) afterReveal();
-    }
-  });
-}
-
-function inkReveal(container) {
-  const inners = container.querySelectorAll('.ink-inner');
-  gsap.to(inners, {
-    y: '0%', duration: 0.55,
-    ease: 'power3.out', stagger: 0.09
-  });
-}
-
-function escHtml(s) {
-  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
-// ════════════════════════════
-//  PAGE TURN (Canvas)
-// ════════════════════════════
-function pageTurn(onDone) {
-  const canvas = document.getElementById('ptc');
-  const ctx    = canvas.getContext('2d');
-  const W = canvas.width  = window.innerWidth;
-  const H = canvas.height = window.innerHeight;
-  canvas.style.pointerEvents = 'all';
-
-  const stage  = document.getElementById('stage');
-  const pageEl = stage.querySelector('.page');
-  const rect   = pageEl
-    ? pageEl.getBoundingClientRect()
-    : { left: W/2-200, top: H/2-240, width: 400, height: 480 };
-
-  const cx = rect.left + rect.width  / 2;
-  const cy = rect.top  + rect.height / 2;
-  const pw = rect.width;
-  const ph = rect.height;
-
-  gsap.to({ v: 0 }, {
-    v: 1, duration: 0.85, ease: 'power2.inOut',
-    onUpdate: function() {
-      const p = this.targets()[0].v;
-      ctx.clearRect(0, 0, W, H);
-      ctx.save();
-      ctx.translate(cx, cy);
-
-      // scaleX: 1 → 0 → -1  (fold over)
-      const sx = 1 - 2 * p;
-      const sy = 1 - 0.05 * Math.sin(Math.PI * p);
-      ctx.scale(sx, sy);
-
-      const hw = pw / 2, hh = ph / 2;
-
-      // face colour
-      if (sx >= 0) {
-        const g = ctx.createLinearGradient(-hw, 0, hw, 0);
-        g.addColorStop(0,   '#fffaf4');
-        g.addColorStop(0.7, '#fdf6ee');
-        g.addColorStop(1,   '#f0e0cc');
-        ctx.fillStyle = g;
-      } else {
-        const g = ctx.createLinearGradient(-hw, 0, hw, 0);
-        g.addColorStop(0, '#eddfc8');
-        g.addColorStop(1, '#f5e6d0');
-        ctx.fillStyle = g;
-      }
-      rr(ctx, -hw, -hh, pw, ph, 18); ctx.fill();
-
-      // top bar
-      const bg = ctx.createLinearGradient(-hw, -hh, hw, -hh);
-      bg.addColorStop(0,   '#e8c4b8');
-      bg.addColorStop(0.5, '#d4a090');
-      bg.addColorStop(1,   '#c9956a');
-      ctx.fillStyle = bg;
-      rrTop(ctx, -hw, -hh, pw, 4, 18); ctx.fill();
-
-      // fold shadow
-      if (sx > 0) {
-        const sg = ctx.createLinearGradient(hw - 30, 0, hw, 0);
-        sg.addColorStop(0, 'rgba(61,43,31,0)');
-        sg.addColorStop(1, `rgba(61,43,31,${0.18 * p})`);
-        ctx.fillStyle = sg;
-        rr(ctx, -hw, -hh, pw, ph, 18); ctx.fill();
-      }
-
-      ctx.restore();
-    },
-    onComplete: () => {
-      ctx.clearRect(0, 0, W, H);
-      canvas.style.pointerEvents = 'none';
-      if (onDone) onDone();
-    }
-  });
-}
-
-function rr(ctx, x, y, w, h, r) {
-  ctx.beginPath();
-  ctx.moveTo(x+r, y);
-  ctx.lineTo(x+w-r, y); ctx.quadraticCurveTo(x+w, y, x+w, y+r);
-  ctx.lineTo(x+w, y+h-r); ctx.quadraticCurveTo(x+w, y+h, x+w-r, y+h);
-  ctx.lineTo(x+r, y+h); ctx.quadraticCurveTo(x, y+h, x, y+h-r);
-  ctx.lineTo(x, y+r); ctx.quadraticCurveTo(x, y, x+r, y);
-  ctx.closePath();
-}
-
-function rrTop(ctx, x, y, w, h, r) {
-  ctx.beginPath();
-  ctx.moveTo(x+r, y);
-  ctx.lineTo(x+w-r, y); ctx.quadraticCurveTo(x+w, y, x+w, y+r);
-  ctx.lineTo(x+w, y+h); ctx.lineTo(x, y+h);
-  ctx.lineTo(x, y+r); ctx.quadraticCurveTo(x, y, x+r, y);
-  ctx.closePath();
-}
-</script>
+    <div class="confetti"></div>
+    <script>
+        // Simulating progress
+        let progress = 0;
+        const progressBar = document.querySelector('.progress-bar');
+        const interval = setInterval(() => {
+            if (progress >= 100) {
+                clearInterval(interval);
+                // Trigger Confetti
+                for (let i = 0; i < 100; i++) {
+                    let confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = `${Math.random() * 100}vw`;
+                    confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
+                    document.body.appendChild(confetti);
+                }
+            } else {
+                progress += 10;
+                progressBar.style.width = progress + '%';
+            }
+        }, 1000);
+    </script>
 </body>
 </html>
